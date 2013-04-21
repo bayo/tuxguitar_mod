@@ -147,9 +147,8 @@
 			<modules>
 				<!-- OS integration -->
 				<!-- TODO the project need some fix to build with Mac OS.-->
-				<!-- it is maybe needed to use another SWT version, for example http://swt-repo.googlecode.com/svn/repo/org/eclipse/swt/ -->
+				<!-- TODO is it really needed when we use http://swt-repo.googlecode.com/svn/repo/org/eclipse/swt/ -->
 				<module>TuxGuitar-cocoa-integration</module>
-				<!-- TODO the project need some fix to build with Mac OS -->
 				<module>TuxGuitar-carbon-integration</module>
 
 				<!-- JNI plugins -->

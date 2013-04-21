@@ -18,9 +18,30 @@
 	<name>TuxGuitar :: MacOS Carbon integration plugin</name>
 	<description>MacOS Carbon integration plugin for TuxGuitar</description>
 
+	<!-- TODO clean up, this pom is full of hack, if there is something cleaner, with only 1 pom, it is welcome -->
 	<build>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+
 		<plugins>
-			<!-- compiler -->
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>resources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- compile java files -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<executions>
@@ -33,38 +54,45 @@
 				</executions>
 			</plugin>
 
-			<!-- generate the jar -->
+			<!-- package the jar -->
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<executions>
 					<execution>
-					<phase>validate</phase>
+						<phase>package</phase>
 						<goals>
 							<goal>jar</goal>
 						</goals>
+						<configuration>
+							<finalName>${project.artifactId}-${version}</finalName>
+							<includes>
+								<include>**/*</include>
+							</includes>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 
-			<!-- the jar is also an artefact -->
+			<!-- install .jar as an artefact -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 				<executions>
-				  <execution>
-					<phase>validate</phase>
-					<goals>
-					  <goal>attach-artifact</goal>
-					</goals>
-					<configuration>
-					  <artifacts>
-						<artifact>
-						  <file>${project.build.directory}/${project.artifactId}-${version}.jar</file>
-						  <type>jar</type>
-						</artifact>
-					  </artifacts>
-					</configuration>
-				  </execution>
+					<execution>
+						<id>jar-artefact</id>
+						<phase>package</phase>
+						<goals>
+							<goal>attach-artifact</goal>
+						</goals>
+						<configuration>
+							<artifacts>
+								<artifact>
+									<file>${project.build.directory}/${project.artifactId}-${version}.jar</file>
+									<type>jar</type>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
@@ -72,15 +100,17 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>native-maven-plugin</artifactId>
-				<extensions>true</extensions>       
+				<extensions>true</extensions>
 				<configuration>
 					<compilerProvider>generic</compilerProvider>
 					<compilerStartOptions>
 						<compilerStartOption>-fPIC</compilerStartOption>
 					</compilerStartOptions>
 					<linkerStartOptions>
-						<linkerStartOption>-shared -lasound</linkerStartOption> 
+						<linkerStartOption>-shared</linkerStartOption>
 					</linkerStartOptions>
+					<!-- easy way to package the shared lib with jar -->
+					<linkerOutputDirectory>${project.build.directory}/classes</linkerOutputDirectory>
 
 					<javahOS>unix</javahOS>
 
@@ -88,7 +118,7 @@
 						<source>
 							<directory>src/main/native</directory>
 							<includes>
-								<include>**/*.c</include>
+								<include>**/*.cpp</include>
 							</includes>
 						</source>
 					</sources>
@@ -104,11 +134,11 @@
 	</build>
 
 	<dependencies>
-	        <dependency>
-					<groupId>org.herac.tuxguitar</groupId>
-					<artifactId>tuxguitar-app</artifactId>
-				    <scope>provided</scope>
-	        </dependency>
+		<dependency>
+			<groupId>org.herac.tuxguitar</groupId>
+			<artifactId>tuxguitar-app</artifactId>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 </project>
